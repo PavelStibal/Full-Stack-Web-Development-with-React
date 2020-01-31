@@ -9,8 +9,14 @@ var authenticate = require('../authenticate');
 router.use(bodyParser.json());
 
 /* GET users listing. */
-router.get('/', function (req, res, next) {
-  res.send('respond with a resource');
+router.get('/', authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
+  User.find({})
+    .then((users) => {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json(users);
+    }, (err) => next(err))
+    .catch((err) => next(err));
 });
 
 router.post('/signup', (req, res, next) => {
@@ -54,8 +60,7 @@ router.get('/logout', (req, res) => {
     req.session.destroy();
     res.clearCookie('session-id');
     res.redirect('/');
-  }
-  else {
+  } else {
     var err = new Error('You are not logged in!');
     err.status = 403;
     next(err);
