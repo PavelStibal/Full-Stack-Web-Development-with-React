@@ -137,7 +137,7 @@ class CommentForm extends Component {
                 <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
                     <ModalHeader>
                         Submit Comment
-          </ModalHeader>
+                    </ModalHeader>
                     <ModalBody>
                         <LocalForm onSubmit={(values) => this.handleSubmit(values)}>
                             <Row className="form-group">
@@ -175,7 +175,7 @@ class CommentForm extends Component {
                                 <Col>
                                     <Button type="submit" color="primary">
                                         Submit
-                  </Button>
+                                     </Button>
                                 </Col>
                             </Row>
                         </LocalForm>
