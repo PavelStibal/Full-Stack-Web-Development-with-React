@@ -4,18 +4,36 @@ import AboutUs from './AboutComponent';
 import Menu from './MenuComponent';
 import ContactUs from './ContactComponent';
 import Dishdetail from './DishdetailComponent';
-import { DISHES } from '../shared/dishes';
 import { View, Platform, Text, ScrollView, Image, StyleSheet } from 'react-native';
 import { createStackNavigator, createDrawerNavigator, DrawerItems, SafeAreaView } from 'react-navigation';
 import { Icon } from 'react-native-elements';
+import { connect } from 'react-redux';
+import { fetchDishes, fetchComments, fetchPromos, fetchLeaders } from '../redux/ActionCreators';
+
+const mapStateToProps = state => {
+    return {
+        dishes: state.dishes,
+        comments: state.comments,
+        promotions: state.promotions,
+        leaders: state.leaders
+    }
+}
+
+const mapDispatchToProps = dispatch => ({
+    fetchDishes: () => dispatch(fetchDishes()),
+    fetchComments: () => dispatch(fetchComments()),
+    fetchLeaders: () => dispatch(fetchLeaders()),
+    fetchPromotions: () => dispatch(fetchPromos())
+});
 
 const MenuNavigator = createStackNavigator({
     Menu: {
         screen: Menu,
         navigationOptions: ({ navigation }) => ({
-            headerLeft: <Icon name="menu" size={24}
+            headerLeft: <Icon name='menu' size={24}
                 color='white'
-                onPress={() => navigation.toggleDrawer()} />
+                onPress={() => navigation.toggleDrawer()}
+            />
         })
     },
     Dishdetail: { screen: Dishdetail }
@@ -45,9 +63,10 @@ const HomeNavigator = createStackNavigator({
             color: "#fff"
         },
         headerTintColor: "#fff",
-        headerLeft: <Icon name="menu" size={24}
+        headerLeft: <Icon name='menu' size={24}
             color='white'
-            onPress={() => navigation.toggleDrawer()} />
+            onPress={() => navigation.toggleDrawer()}
+        />
     })
 });
 
@@ -62,11 +81,13 @@ const ContactNavigator = createStackNavigator({
             color: "#fff"
         },
         headerTintColor: "#fff",
-        headerLeft: <Icon name="menu" size={24}
+        headerLeft: <Icon name='menu' size={24}
             color='white'
-            onPress={() => navigation.toggleDrawer()} />
+            onPress={() => navigation.toggleDrawer()}
+        />
     })
 });
+
 const AboutNavigator = createStackNavigator({
     About: { screen: AboutUs }
 }, {
@@ -78,21 +99,26 @@ const AboutNavigator = createStackNavigator({
             color: "#fff"
         },
         headerTintColor: "#fff",
-        headerLeft: <Icon name="menu" size={24}
+        headerLeft: <Icon name='menu' size={24}
             color='white'
-            onPress={() => navigation.toggleDrawer()} />
+            onPress={() => navigation.toggleDrawer()}
+        />
     })
 });
 
 const CustomDrawerContentComponent = (props) => (
     <ScrollView>
-        <SafeAreaView style={styles.container} forceInset={{ top: 'always', horizontal: 'never' }}>
+        <SafeAreaView style={styles.container}
+            forceInset={{ top: 'always', horizontal: 'never' }}>
             <View style={styles.drawerHeader}>
                 <View style={{ flex: 1 }}>
-                    <Image source={require('./images/logo.png')} style={styles.drawerImage} />
+                    <Image source={require('./images/logo.png')}
+                        style={styles.drawerImage} />
                 </View>
                 <View style={{ flex: 2 }}>
-                    <Text style={styles.drawerHeaderText}>Ristorante Con Fusion</Text>
+                    <Text style={styles.drawerHeaderText}>
+                        Ristorante Con Fusion
+                    </Text>
                 </View>
             </View>
             <DrawerItems {...props} />
@@ -107,27 +133,26 @@ const MainNavigator = createDrawerNavigator({
         navigationOptions: {
             title: 'Home',
             drawerLabel: 'Home',
-            drawerIcon: ({ tintColor, focused }) => (
+            drawerIcon: ({ tintColor }) => (
                 <Icon
                     name='home'
-                    type='font-awesome'
+                    type="font-awesome"
                     size={24}
                     color={tintColor}
                 />
             )
         }
     },
-
     About:
     {
         screen: AboutNavigator,
         navigationOptions: {
             title: 'About',
             drawerLabel: 'About Us',
-            drawerIcon: ({ tintColor, focused }) => (
+            drawerIcon: ({ tintColor }) => (
                 <Icon
                     name='info-circle'
-                    type='font-awesome'
+                    type="font-awesome"
                     size={24}
                     color={tintColor}
                 />
@@ -140,10 +165,10 @@ const MainNavigator = createDrawerNavigator({
         navigationOptions: {
             title: 'Menu',
             drawerLabel: 'Menu',
-            drawerIcon: ({ tintColor, focused }) => (
+            drawerIcon: ({ tintColor }) => (
                 <Icon
                     name='list'
-                    type='font-awesome'
+                    type="font-awesome"
                     size={24}
                     color={tintColor}
                 />
@@ -156,10 +181,10 @@ const MainNavigator = createDrawerNavigator({
         navigationOptions: {
             title: 'Contact Us',
             drawerLabel: 'Contact Us',
-            drawerIcon: ({ tintColor, focused }) => (
+            drawerIcon: ({ tintColor }) => (
                 <Icon
                     name='address-card'
-                    type='font-awesome'
+                    type="font-awesome"
                     size={22}
                     color={tintColor}
                 />
@@ -172,18 +197,20 @@ const MainNavigator = createDrawerNavigator({
 });
 
 class Main extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            dishes: DISHES,
-            selectedDish: null
-        };
+
+
+    componentDidMount() {
+        this.props.fetchDishes();
+        this.props.fetchComments();
+        this.props.fetchLeaders();
+        this.props.fetchLeaders();
     }
+
     onDishSelect(dishId) {
         this.setState({ selectedDish: dishId })
     }
-    render() {
 
+    render() {
         return (
             <View style={{ flex: 1, paddingTop: Platform.OS === 'ios' ? 0 : Expo.Constants.statusBarHeight }}>
                 <MainNavigator />
@@ -194,7 +221,7 @@ class Main extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flex: 1
     },
     drawerHeader: {
         backgroundColor: '#512DA8',
@@ -214,6 +241,6 @@ const styles = StyleSheet.create({
         width: 80,
         height: 60
     }
-});
+})
 
-export default Main;
+export default connect(mapStateToProps, mapDispatchToProps)(Main);
